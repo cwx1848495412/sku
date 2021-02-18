@@ -1,5 +1,3 @@
-# sku
-
 # 本项目完成了 SKU 的拼装展示
 
 ## Project setup
