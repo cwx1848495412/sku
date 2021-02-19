@@ -1,6 +1,32 @@
 <template>
   <div class="main">
-    <table border="1">
+    <center style="margin-top: 50px">
+      添加规格名:<input ref="specName" value=""/>
+      <button @click="addSpecName">添加规格名</button>
+      <br/>
+
+      <table border="1" style="margin-top: 50px" width="820px">
+        <tr>
+          <td>规格名</td>
+          <td>规格值</td>
+          <td>操作</td>
+        </tr>
+        <tr v-for="(item,index) in dbAttrList" :key="index">
+          <td>{{ item.specName }}</td>
+          <td>
+            <label v-for="(valItem,i) in item.specValue" :key="i">
+              <input type="checkbox" @click="changeAttrList($event,item.specName,valItem)">{{ valItem }}
+            </label>
+          </td>
+          <td>
+            <input ref="specValue" value=""/>
+            <button @click="addSpecValue(item.specValue,index)">添加规格值</button>
+          </td>
+        </tr>
+      </table>
+    </center>
+
+    <table border="1" style="margin-top: 50px">
       <tr>
         <td>序号</td>
         <td v-for="(item,index) in columnList" :key="index">{{ item }}</td>
@@ -28,37 +54,37 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
   components: {},
   mounted() {
-    this.generatorSkuList()
+    // this.generatorSkuList()
   },
   data() {
     return {
+      dbAttrList: [],
       // 规格列表
       attrList: [
-        {
-          specName: "颜色",
-          specValue: ["红色", "黄色", "蓝色"]
-        },
-        {
-          specName: "尺码",
-          specValue: ["小码", "中码", "大码"]
-        },
-        {
-          specName: "品牌",
-          specValue: ["苹果", "小米", "华为"]
-        },
-        {
-          specName: "口味",
-          specValue: ["焦糖", "牛奶"]
-        },
-        {
-          specName: "温度",
-          specValue: ["常温", "冰镇", "热饮"]
-        },
+        // {
+        //   specName: "颜色",
+        //   specValue: ["红色", "黄色", "蓝色"]
+        // },
+        // {
+        //   specName: "尺码",
+        //   specValue: ["小码", "中码", "大码"]
+        // },
+        // {
+        //   specName: "品牌",
+        //   specValue: ["苹果", "小米", "华为"]
+        // },
+        // {
+        //   specName: "口味",
+        //   specValue: ["焦糖", "牛奶"]
+        // },
+        // {
+        //   specName: "温度",
+        //   specValue: ["常温", "冰镇", "热饮"]
+        // },
       ],
       // 表头展示列
       columnList: [],
@@ -78,6 +104,8 @@ export default {
   },
   methods: {
     generatorSkuList() {
+      this.columnList = []
+      this.tableList = []
       for (let i = 0; i < this.attrList.length; i++) {
         this.tableList = this.addColumn(this.tableList, this.attrList[i].specName, this.attrList[i].specValue)
       }
@@ -111,6 +139,49 @@ export default {
       }
       return newDataList
     },
+    addSpecName() {
+      this.dbAttrList.push({
+        specName: this.$refs.specName.value,
+        specValue: []
+      })
+      this.$refs.specName.value = ''
+    },
+    addSpecValue(speValArr, index) {
+      speValArr.push(this.$refs.specValue[index].value)
+      this.$refs.specValue[index].value = ''
+    },
+    changeAttrList(event, name, val) {
+      let checked = event.target.checked
+      if (checked) {
+        this.addAttrList(name, val)
+      } else {
+        this.removeAttrList(name, val)
+      }
+      this.generatorSkuList()
+    },
+    addAttrList(name, val) {
+      for (let i = 0; i < this.attrList.length; i++) {
+        if (this.attrList[i].specName === name) {
+          this.attrList[i].specValue.push(val)
+          return
+        }
+      }
+      this.attrList.push({
+        specName: name,
+        specValue: [val]
+      })
+    },
+    removeAttrList(name, val) {
+      for (let i = 0; i < this.attrList.length; i++) {
+        if (this.attrList[i].specName === name) {
+          this.attrList[i].specValue.splice(this.attrList[i].specValue.indexOf(val), 1)
+          if (this.attrList[i].specValue.length === 0) {
+            this.attrList.splice(i, 1)
+          }
+          return
+        }
+      }
+    }
   }
 
 
@@ -142,6 +213,7 @@ export default {
 <style scoped>
 .main table {
   margin: auto;
+  text-align: center;
 }
 
 td {
