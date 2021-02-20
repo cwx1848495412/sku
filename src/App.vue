@@ -24,32 +24,50 @@
           </td>
         </tr>
       </table>
+
+      <table border="1" style="margin-top: 50px">
+        <tr>
+          <td>序号</td>
+          <td v-for="(item,index) in columnList" :key="index">{{ item }}</td>
+          <td>库存</td>
+          <td>价格</td>
+          <td>销量</td>
+        </tr>
+
+        <tr v-for="(item,index) in tableList" :key="index+'/'">
+          <td>{{ index + 1 }}</td>
+          <td :key="i+'?'"
+              v-for="(detailBodyInfo,i) in item.tdList"
+              :rowspan="detailBodyInfo.rowSpan"
+              v-show="detailBodyInfo.rowSpanShow"
+          >
+            {{ detailBodyInfo.value }}
+          </td>
+          <td><input v-model.number="item.stock" type="number"/></td>
+          <td>{{ item.price }}</td>
+          <td>{{ item.salesVolume }}</td>
+        </tr>
+      </table>
+
+      <button style="margin-top: 20px" @click="generatorAllKeySet">生成generatorAllKeySet</button>
+      <table border="1" style="margin-top: 50px" width="820px">
+        <tr v-for="(item,index) in attrList" :key="index">
+          <td>{{ item.specName }}</td>
+          <td>
+            <label v-for="(valItem,i) in item.specValue" :key="i">
+              <input type="radio"
+                     v-model="radioSeleckedKeys[item.specName]"
+                     :name="item.specName"
+                     :disabled="isDisable()"
+                     :value="valItem"
+                     @click="changeGrey()"
+              >{{ valItem }}
+              <!--              $event,item.specName,valItem-->
+            </label>
+          </td>
+        </tr>
+      </table>
     </center>
-
-    <table border="1" style="margin-top: 50px">
-      <tr>
-        <td>序号</td>
-        <td v-for="(item,index) in columnList" :key="index">{{ item }}</td>
-        <td>库存</td>
-        <td>价格</td>
-        <td>销量</td>
-      </tr>
-
-      <tr v-for="(item,index) in tableList" :key="index+'/'">
-        <td>{{ index + 1 }}</td>
-        <td :key="i+'?'"
-            v-for="(detailBodyInfo,i) in item.tdList"
-            :rowspan="detailBodyInfo.rowSpan"
-            v-show="detailBodyInfo.rowSpanShow"
-        >
-          {{ detailBodyInfo.value }}
-        </td>
-        <td>{{ item.stock }}</td>
-        <td>{{ item.price }}</td>
-        <td>{{ item.salesVolume }}</td>
-      </tr>
-    </table>
-
   </div>
 </template>
 
@@ -57,26 +75,23 @@
 export default {
   name: 'App',
   components: {},
-  mounted() {
-    // this.generatorSkuList()
-  },
   data() {
     return {
       dbAttrList: [],
       // 规格列表
       attrList: [
-        // {
-        //   specName: "颜色",
-        //   specValue: ["红色", "黄色", "蓝色"]
-        // },
-        // {
-        //   specName: "尺码",
-        //   specValue: ["小码", "中码", "大码"]
-        // },
-        // {
-        //   specName: "品牌",
-        //   specValue: ["苹果", "小米", "华为"]
-        // },
+        {
+          specName: "颜色",
+          specValue: ["红", "黄", "蓝"]
+        },
+        {
+          specName: "尺码",
+          specValue: ["小", "中", "大"]
+        },
+        {
+          specName: "品牌",
+          specValue: ["苹果", "小米", "华为"]
+        },
         // {
         //   specName: "口味",
         //   specValue: ["焦糖", "牛奶"]
@@ -100,7 +115,16 @@ export default {
         //   salesVolume: 500
         // },
       ],
+      allKeySet: {
+        // '红':1,
+        // '小':1,
+      },
+      radioSeleckedKeys: {}
     }
+  },
+  mounted() {
+    this.generatorSkuList()
+    // console.log(JSON.parse(JSON.stringify(this.tableList)))
   },
   methods: {
     generatorSkuList() {
@@ -117,7 +141,7 @@ export default {
         if (dataList.length === 0) {
           newDataList.push({
             tdList: [{name: specName, value: specValue[i], rowSpan: 1, rowSpanShow: true}],
-            stock: 100,
+            stock: 0,
             price: 200,
             salesVolume: 300
           })
@@ -144,6 +168,10 @@ export default {
         specName: this.$refs.specName.value,
         specValue: []
       })
+
+      let specName = this.$refs.specName.value
+      this.radioSeleckedKeys = {...this.radioSeleckedKeys, [specName]: ''}
+
       this.$refs.specName.value = ''
     },
     addSpecValue(speValArr, index) {
@@ -181,6 +209,65 @@ export default {
           return
         }
       }
+    },
+    generatorAllKeySet() {
+      this.allKeySet = {}
+      let keySet = {
+        // '红-小': 1,
+      }
+      for (var i = 0; i < this.tableList.length; i++) {
+        if (this.tableList[i].stock <= 0) continue
+        let len = this.tableList[i].tdList.length
+        let keyArr = []
+        for (let j = len - 1; j >= 0; j--) {
+          keyArr.push(this.tableList[i].tdList[j].value)
+        }
+        keySet[keyArr.join('-')] = this.tableList[i].stock
+      }
+      console.log(keySet)
+
+      for (const key in keySet) {
+        let keyArr = key.split('-')
+        let allSet = this.all(keyArr)
+        console.log(allSet)
+        for (let i = 1; i < allSet.length; i++) {
+          let keyName = allSet[i].join('-')
+          this.allKeySet[keyName] = this.allKeySet[keyName] === undefined ? keySet[key] : this.allKeySet[keyName] + keySet[key]
+        }
+      }
+
+      console.log(this.allKeySet)
+
+    },
+    all(arr) { // 借鉴大佬代码
+      let result = [];
+      for (let i = 0; i < (1 << arr.length); i++) { // 数组的长度为二进制的位数
+        let test = [];
+        for (let j = 0; j < arr.length; j++) { // 遍历二进制的值
+          if (i & (1 << j)) { // 值为0、1、2、4、8、16, 其中0为空集
+            test.push(arr[j]); // i与二进制数进行按位与运算，不为0就说明是数组的一个值
+          }
+        }
+        result.push(test);
+      }
+      return result;
+    },
+    isDisable() {
+      return false;
+    },
+    changeGrey() {
+      // event, name, val
+      // console.log(event.target.checked, name, val)
+      // this.radioSeleckedKeys[name] = val
+      // console.log(Object.keys(this.radioSeleckedKeys),this.radioSeleckedKeys[name])
+
+
+      console.log(this.radioSeleckedKeys)
+      // console.log(this.radioSeleckedKeys.length)
+      // for (let i = 0; i < this.radioSeleckedKeys.length; i++) {
+      //   console.log('--'+this.radioSeleckedKeys[i])
+      // }
+      /*console.log(JSON.parse(JSON.stringify(this.radioSeleckedKeys)))*/
     }
   }
 }
