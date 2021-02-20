@@ -56,13 +56,11 @@
           <td>
             <label v-for="(valItem,i) in item.specValue" :key="i">
               <input type="radio"
-                     v-model="radioSeleckedKeys[item.specName]"
                      :name="item.specName"
                      :disabled="isDisable()"
                      :value="valItem"
-                     @click="changeGrey()"
+                     @click="changeGrey($event,item.specName,valItem)"
               >{{ valItem }}
-              <!--              $event,item.specName,valItem-->
             </label>
           </td>
         </tr>
@@ -126,6 +124,11 @@ export default {
     this.generatorSkuList()
     // console.log(JSON.parse(JSON.stringify(this.tableList)))
   },
+  computed:{
+    isDisable() {
+      return false;
+    },
+  },
   methods: {
     generatorSkuList() {
       this.columnList = []
@@ -168,10 +171,8 @@ export default {
         specName: this.$refs.specName.value,
         specValue: []
       })
-
-      let specName = this.$refs.specName.value
-      this.radioSeleckedKeys = {...this.radioSeleckedKeys, [specName]: ''}
-
+      // let specName = this.$refs.specName.value
+      // this.radioSeleckedKeys = {...this.radioSeleckedKeys, [specName]: ''}
       this.$refs.specName.value = ''
     },
     addSpecValue(speValArr, index) {
@@ -252,17 +253,12 @@ export default {
       }
       return result;
     },
-    isDisable() {
-      return false;
-    },
-    changeGrey() {
-      // event, name, val
-      // console.log(event.target.checked, name, val)
-      // this.radioSeleckedKeys[name] = val
-      // console.log(Object.keys(this.radioSeleckedKeys),this.radioSeleckedKeys[name])
+    changeGrey(event, name, val) {
+      console.log(event.target.checked, name, val)
+      this.radioSeleckedKeys[name] = val
 
 
-      console.log(this.radioSeleckedKeys)
+      // console.log(this.radioSeleckedKeys)
       // console.log(this.radioSeleckedKeys.length)
       // for (let i = 0; i < this.radioSeleckedKeys.length; i++) {
       //   console.log('--'+this.radioSeleckedKeys[i])
