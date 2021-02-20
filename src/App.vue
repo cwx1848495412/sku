@@ -117,17 +117,12 @@ export default {
         // '红':1,
         // '小':1,
       },
-      radioSeleckedKeys: {}
+      radioSeleckedKeys: []
     }
   },
   mounted() {
     this.generatorSkuList()
     // console.log(JSON.parse(JSON.stringify(this.tableList)))
-  },
-  computed:{
-    isDisable() {
-      return false;
-    },
   },
   methods: {
     generatorSkuList() {
@@ -253,18 +248,23 @@ export default {
       }
       return result;
     },
+    isDisable() {
+      return false;
+    },
     changeGrey(event, name, val) {
       console.log(event.target.checked, name, val)
       this.radioSeleckedKeys[name] = val
-
-
       // console.log(this.radioSeleckedKeys)
       // console.log(this.radioSeleckedKeys.length)
-      // for (let i = 0; i < this.radioSeleckedKeys.length; i++) {
-      //   console.log('--'+this.radioSeleckedKeys[i])
-      // }
       /*console.log(JSON.parse(JSON.stringify(this.radioSeleckedKeys)))*/
-    }
+
+      event.target.checked = !event.target.checked
+    },
+
+    // changeRadioResult:function(id,score){
+    //   var temp = {id:id,score:score};
+    //   this.radioSeleckedKeys.push(temp);
+    // }
   }
 }
 </script>
