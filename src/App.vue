@@ -56,13 +56,11 @@
           <td>
             <label v-for="(valItem,i) in item.specValue" :key="i">
               <input type="radio"
-                     v-model="radioSeleckedKeys[item.specName]"
                      :name="item.specName"
                      :disabled="isDisable()"
                      :value="valItem"
-                     @click="changeGrey()"
+                     @click="changeGrey($event,item.specName,valItem)"
               >{{ valItem }}
-              <!--              $event,item.specName,valItem-->
             </label>
           </td>
         </tr>
@@ -119,7 +117,7 @@ export default {
         // '红':1,
         // '小':1,
       },
-      radioSeleckedKeys: {}
+      radioSeleckedKeys: []
     }
   },
   mounted() {
@@ -168,10 +166,8 @@ export default {
         specName: this.$refs.specName.value,
         specValue: []
       })
-
-      let specName = this.$refs.specName.value
-      this.radioSeleckedKeys = {...this.radioSeleckedKeys, [specName]: ''}
-
+      // let specName = this.$refs.specName.value
+      // this.radioSeleckedKeys = {...this.radioSeleckedKeys, [specName]: ''}
       this.$refs.specName.value = ''
     },
     addSpecValue(speValArr, index) {
@@ -255,20 +251,20 @@ export default {
     isDisable() {
       return false;
     },
-    changeGrey() {
-      // event, name, val
-      // console.log(event.target.checked, name, val)
-      // this.radioSeleckedKeys[name] = val
-      // console.log(Object.keys(this.radioSeleckedKeys),this.radioSeleckedKeys[name])
-
-
-      console.log(typeof this.radioSeleckedKeys)
+    changeGrey(event, name, val) {
+      console.log(event.target.checked, name, val)
+      this.radioSeleckedKeys[name] = val
+      // console.log(this.radioSeleckedKeys)
       // console.log(this.radioSeleckedKeys.length)
-      // for (let i = 0; i < this.radioSeleckedKeys.length; i++) {
-      //   console.log('--'+this.radioSeleckedKeys[i])
-      // }
       /*console.log(JSON.parse(JSON.stringify(this.radioSeleckedKeys)))*/
-    }
+
+      event.target.checked = !event.target.checked
+    },
+
+    // changeRadioResult:function(id,score){
+    //   var temp = {id:id,score:score};
+    //   this.radioSeleckedKeys.push(temp);
+    // }
   }
 }
 </script>
