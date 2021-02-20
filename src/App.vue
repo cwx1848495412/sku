@@ -262,7 +262,7 @@ export default {
       // console.log(Object.keys(this.radioSeleckedKeys),this.radioSeleckedKeys[name])
 
 
-      console.log(this.radioSeleckedKeys)
+      console.log(typeof this.radioSeleckedKeys)
       // console.log(this.radioSeleckedKeys.length)
       // for (let i = 0; i < this.radioSeleckedKeys.length; i++) {
       //   console.log('--'+this.radioSeleckedKeys[i])
