@@ -325,8 +325,6 @@ export default {
       }
 
       // 开始处理交互样式
-      // let path = this.selectedNodes.join('-')
-      // this.showData = this.allKeySet[path];
 
       // 待测试节点
       let waitCheckNode = [];
