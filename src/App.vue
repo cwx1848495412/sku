@@ -372,13 +372,14 @@ export default {
         for (let x = 0; x < testAttrNames.length; x++) {
           tempData.push(testAttrNames[x].nodeName)
         }
-        if (!this.allKeySet[tempData.join('-')]) {
-          this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].greyChecked = true;
-          this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].isActive = false;
-        } else {
+
+        if (this.allKeySet[tempData.join('-')]) {
           this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].greyChecked = false;
+          return;
         }
 
+        this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].greyChecked = true;
+        this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].isActive = false;
       }
     },
     // 处理SKU选项卡的选中样式
