@@ -359,13 +359,13 @@ export default {
           testAttrNames = [...this.selectedNodes]
         }
 
-        // testAttrNames = testAttrNames.concat(this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].name)
         let tempVar = {
           nodeIndex: waitCheckNode[i].waitNameIndex,
           nodeName: this.chooseNameValueList[waitCheckNode[i].waitNameIndex].specValue[waitCheckNode[i].waitValIndex].name
         }
         testAttrNames = [...testAttrNames, tempVar]
 
+        // 按照索引层级排序 防止字串拼装顺序错误
         testAttrNames.sort(this.compare('nodeIndex'))
 
         let tempData = []
