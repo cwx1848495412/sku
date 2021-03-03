@@ -144,7 +144,7 @@ export default {
   },
   mounted() {
     this.showData = this.notic
-    // this.generatorTestData()
+    this.generatorTestData()
     // this.generatorSkuList()
   },
   methods: {
@@ -172,9 +172,29 @@ export default {
     generatorSkuList() {
       this.columnList = []
       this.tableList = []
-      for (let i = 0; i < this.attrList.length; i++) {
+      // for (let i = 0; i < this.attrList.length; i++) {
+      //   this.tableList = this.addColumn(this.tableList, this.attrList[i].specName, this.attrList[i].specValue)
+      // }
+
+      this.sortAttrList()
+      for (let i = this.attrList.length - 1; i >= 0; i--) {
         this.tableList = this.addColumn(this.tableList, this.attrList[i].specName, this.attrList[i].specValue)
       }
+    },
+    // 做规格排序
+    sortAttrList() {
+      let sortAttrList = []
+      for (let i = 0; i < this.dbAttrList.length; i++) {
+        for (let j = 0; j < this.attrList.length; j++) {
+          if (this.dbAttrList[i].specName === this.attrList[j].specName) {
+            sortAttrList.push({
+              specName: this.attrList[j].specName,
+              specValue: this.attrList[j].specValue
+            })
+          }
+        }
+      }
+      this.attrList = sortAttrList
     },
     // 添加列
     addColumn(dataList, specName, specValue) {
