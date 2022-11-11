@@ -184,6 +184,7 @@ export default {
   margin-bottom: 10px;
   background: gray;
   cursor: pointer;
+  user-select: none;
 }
 
 .active {
