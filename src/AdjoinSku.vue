@@ -47,9 +47,6 @@ export default {
     this.init();
   },
   methods: {
-    setSpecsS(params) {
-      this.specsS = params;
-    },
     init() {
       this.vertex = this.commoditySpecs.reduce((total, current) => [
         ...total,
@@ -65,7 +62,7 @@ export default {
       // 同类顶点创建
       this.initSimilar();
 
-      this.optionSpecs = this.querySpecsOptions(this.specsS);
+      this.optionSpecs = this.querySpecsOptions(null);
 
     },
     getVertexRow(id) {
@@ -89,7 +86,7 @@ export default {
       });
     },
 
-    getRowToatl(params) {
+    getRowTotal(params) {
       params = params.map(id => this.getVertexRow(id));
       console.log("getRowToatl", params);
       const adjoinNames = [];
@@ -106,17 +103,18 @@ export default {
 
     // 交集
     getUnions(params) {
-      const row = this.getRowToatl(params);
+      const row = this.getRowTotal(params);
       // [0, 5, 0, 3, 4, 3, 3, 0, 3, 4, 3]
       return row.map((item, index) => item >= params.length && this.vertex[index]).filter(Boolean);
     },
 
     // 并集
     getCollection(params) {
-      params = this.getRowToatl(params);
+      params = this.getRowTotal(params);
       const filter = params.map((item, index) => item && this.vertex[index]).filter(Boolean);
       return filter;
     },
+
     initCommodity() {
       this.data.forEach((item) => {
         this.applyCommodity(item.specs);
@@ -126,6 +124,7 @@ export default {
     initSimilar() {
       // 获得所有可选项
       const specsOption = this.getCollection(this.vertex);
+      console.log("specsOption", specsOption);
       this.commoditySpecs.forEach((item) => {
         const params = [];
         item.list.forEach((value) => {
@@ -136,16 +135,16 @@ export default {
       });
 
 
-      // this.logLine()
-      // console.log("initSimilar");
-      // for (let i = 0; i < this.adjoinArray.length; i += 11) {
-      //   let str = "";
-      //   for (let j = i; j - i < 11; j++) {
-      //     str += this.adjoinArray[j] || 0;
-      //   }
-      //   console.log(str);
-      // }
-      // this.logLine()
+      this.logLine()
+      console.log("initSimilar");
+      for (let i = 0; i < this.adjoinArray.length; i += 11) {
+        let str = "";
+        for (let j = i; j - i < 11; j++) {
+          str += this.adjoinArray[j] || 0;
+        }
+        console.log(str);
+      }
+      this.logLine()
     },
 
     applyCommodity(params) {
@@ -154,21 +153,21 @@ export default {
       });
     },
     querySpecsOptions(params) {
-      // 判断是否存在选项填一个
-      if (params != undefined) {
-        // 过滤一下选项
-        params = this.getUnions(params.filter(Boolean));
-      } else {
-        // 兜底选一个
-        params = this.getCollection(this.vertex);
+      if (params == null) {
+        return this.getCollection(this.vertex);
       }
-      console.log(params)
-      return params;
+
+      const filterArr = params.filter(Boolean);
+
+      if (filterArr.length === 0) {
+        return this.getCollection(this.vertex);
+      }
+
+      return this.getUnions(filterArr);
     },
     handleClick(bool, text, index) {
-      // if (this.specsS[index] !== text && !bool) return;
+      if (this.specsS[index] !== text && !bool) return;
       this.specsS[index] = this.specsS[index] === text ? '' : text;
-      console.log(this.specsS)
       this.optionSpecs = this.querySpecsOptions(this.specsS);
     },
     logLine() {
