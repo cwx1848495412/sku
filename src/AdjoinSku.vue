@@ -62,8 +62,13 @@ export default {
       // 同类顶点创建
       this.initSimilar();
 
-      this.optionSpecs = this.querySpecsOptions(null);
+      this.chosePath(0);
 
+      this.optionSpecs = this.querySpecsOptions(this.specsS);
+
+    },
+    chosePath(pathIndex) {
+      this.specsS.push(...this.data[pathIndex].specs);
     },
     getVertexRow(id) {
       const index = this.vertex.indexOf(id);
